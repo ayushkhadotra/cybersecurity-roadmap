@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guess The Number | Decoder Terminal</title>
+  <meta name="description" content="A terminal-styled number deduction game. Crack the locked code between 1 and 20 before you run out of lives." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Ambient background layers -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--purple" aria-hidden="true"></div>
+
+  <div class="page">
+
+    <!-- ============ HERO ============ -->
+    <header class="hero">
+      <p class="hero__eyebrow">&gt; booting decoder.exe<span class="cursor">▌</span></p>
+      <h1 class="hero__title" data-text="GUESS_THE_NUMBER">GUESS<span class="hero__title-dim">_</span>THE<span class="hero__title-dim">_</span>NUMBER</h1>
+      <p class="hero__subtitle">
+        The core has locked a value between <strong>1</strong> and <strong>20</strong>.
+        You have <strong>5 attempts</strong> to decode it. Every guess narrows the signal.
+      </p>
+    </header>
+
+    <!-- ============ GAME CARD ============ -->
+    <main class="card" id="gameCard">
+
+      <!-- Terminal chrome -->
+      <div class="card__chrome">
+        <div class="card__chrome-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="card__chrome-path">root@decoder:~/guess_the_number</span>
+      </div>
+
+      <!-- Status row: lives + best score -->
+      <div class="card__status">
+        <div class="lives" id="lives" aria-label="Remaining lives">
+          <span class="life" data-life="1">♥</span>
+          <span class="life" data-life="2">♥</span>
+          <span class="life" data-life="3">♥</span>
+          <span class="life" data-life="4">♥</span>
+          <span class="life" data-life="5">♥</span>
+        </div>
+        <div class="best-score">
+          <span class="best-score__label">Best</span>
+          <span class="best-score__value" id="bestScore">—</span>
+        </div>
+      </div>
+
+      <!-- Range readout -->
+      <div class="range-readout">
+        <span class="range-readout__bound">01</span>
+        <span class="range-readout__dots" aria-hidden="true">••••••••••••••••</span>
+        <span class="range-readout__bound">20</span>
+      </div>
+
+      <!-- Guess Trail: the signature element. Plots every guess on a 1-20 rail -->
+      <div class="trail" id="trail" aria-hidden="true">
+        <div class="trail__rail"></div>
+        <div class="trail__ticks">
+          <span style="left:0%">1</span>
+          <span style="left:50%">10</span>
+          <span style="left:100%">20</span>
+        </div>
+        <!-- guess markers injected here by JS -->
+      </div>
+
+      <!-- Input zone -->
+      <form class="input-zone" id="guessForm" autocomplete="off">
+        <div class="input-wrap">
+          <input
+            type="number"
+            id="guessInput"
+            name="guess"
+            placeholder="0"
+            min="1"
+            max="20"
+            inputmode="numeric"
+            aria-label="Enter your guess between 1 and 20"
+          />
+          <span class="input-wrap__underline"></span>
+        </div>
+        <button type="submit" class="btn-guess" id="guessBtn">
+          <span>[ FIRE_GUESS ]</span>
+        </button>
+      </form>
+
+      <!-- Feedback -->
+      <p class="feedback" id="feedback" role="status" aria-live="polite">
+        Enter a number to begin the scan.
+      </p>
+
+      <!-- Stats row -->
+      <div class="stats">
+        <div class="stat">
+          <span class="stat__value" id="attemptsUsed">0</span>
+          <span class="stat__label">Used</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" id="attemptsLeft">5</span>
+          <span class="stat__label">Left</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" id="historyCount">0</span>
+          <span class="stat__label">Guesses</span>
+        </div>
+      </div>
+
+      <!-- Guess history list -->
+      <section class="history" aria-label="Guess history">
+        <h2 class="history__title">Guess Log</h2>
+        <ul class="history__list" id="historyList">
+          <li class="history__empty" id="historyEmpty">No transmissions yet.</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <button class="restart-link" id="restartLink" type="button">↻ Restart Session</button>
+
+    <footer class="footer">
+      Made with <span class="footer__heart">❤</span> by Ayush
+    </footer>
+  </div>
+
+  <!-- ============ WIN MODAL ============ -->
+  <div class="modal-backdrop" id="winModal">
+    <div class="modal modal--win" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+      <div class="modal__icon">◎</div>
+      <h2 class="modal__title" id="winTitle">CODE CRACKED</h2>
+      <p class="modal__text">
+        The number was <strong id="winNumber">--</strong>.
+        You decoded it in <strong id="winTries">--</strong> attempts.
+      </p>
+      <p class="modal__subtext" id="winNewBest">New best score!</p>
+      <button class="btn-guess btn-modal" id="winPlayAgain">[ PLAY_AGAIN ]</button>
+    </div>
+  </div>
+
+  <!-- ============ LOSE MODAL ============ -->
+  <div class="modal-backdrop" id="loseModal">
+    <div class="modal modal--lose" role="dialog" aria-modal="true" aria-labelledby="loseTitle">
+      <div class="modal__icon">✕</div>
+      <h2 class="modal__title" id="loseTitle">SIGNAL LOST</h2>
+      <p class="modal__text">
+        Out of attempts. The number was <strong id="loseNumber">--</strong>.
+      </p>
+      <button class="btn-guess btn-modal" id="losePlayAgain">[ TRY_AGAIN ]</button>
+    </div>
+  </div>
+
+  <!-- Confetti canvas -->
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
