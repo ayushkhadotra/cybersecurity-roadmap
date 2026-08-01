@@ -1,23 +1,28 @@
 import random
 
-secret = random.randint(1,20)
+MIN = 1
+MAX = 20
+
+secret = random.randint(MIN, MAX)
 tries = 0
-guess =0
+guess = 0
 
-print("I'm thinking of a no. between 1 to 20")
+print("I'm thinking of a no. between " + str(MIN) + " to " + str(MAX))
 
-text = input("Take a Guess: ")
-guess = int(text)
-tries = tries + 1
+while guess != secret:
 
-# now comparison part
+    text = input("Take a Guess: ")
+    guess = int(text)
+    tries = tries + 1
 
-if guess < 1 or guess > 20:
-    print(" Number is Out of Range. Please Try Again!")
-elif guess < secret:
-    print("Your guess is too low. Try again!")
-elif guess > secret:
-    print("Your guess is too high. Try again!")
-else:   
-    print("Well done! You Guessed it in " + str(tries) + " tries")
+    # now comparison 
+    if guess < MIN or guess > MAX:
+        print(" Number is Out of Range. Please Try Again!")
+    
+    elif guess < secret:
+        print("Your guess is too low. Try again!")
 
+    elif guess > secret:
+        print("Your guess is too high. Try again!")
+    else:
+        print("Well done! You Guessed it in " + str(tries) + " tries")  
