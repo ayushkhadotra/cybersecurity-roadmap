@@ -19,9 +19,9 @@ Welcome to my cybersecurity learning repository.
 - [ ] Linux
 - [ ] Networking
 - [ ] Python
-- [ ] Web Security
-- [ ] Cryptography
 - [ ] TryHackMe
+- [ ] Cryptography
+- [ ] Web Security 
 - [ ] CTFs
 
 ---
